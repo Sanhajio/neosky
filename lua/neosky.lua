@@ -38,12 +38,11 @@ M.start = function()
 	else
 		M.job_id = job_id
 	end
-	vim.fn.rpcnotify(M.job_id, "read")
 end
 
 M.read = function()
-	-- vim.fn.rpcnotify(M.job_id, "read")
-	local feed_json = vim.api.nvim_get_var("neosky_feed")
+	local feed_json = vim.fn.rpcrequest(M.job_id, "read")
+	print(vim.inspect(feed_json))
 
 	-- Decode the JSON string to a Lua table
 	local content = vim.fn.json_decode(feed_json)
@@ -55,6 +54,7 @@ M.read = function()
 		return
 	end
 
+	--[[
 	local bufnr = M._find_or_create_buffer("neosky.social")
 	local posts = {}
 	for _, item in ipairs(content) do
@@ -77,6 +77,8 @@ M.read = function()
 
 	-- Optionally clear g:neosky_feed after processing
 	-- vim.api.nvim_set_var("neosky_feed", vim.fn.json_encode({}))
+		]]
+	--
 end
 
 M.stop = function()
