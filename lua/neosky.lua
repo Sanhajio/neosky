@@ -2,7 +2,7 @@ local log = require("plenary.log")
 local M = {}
 
 M.config = {
-	bin = "/home/sanhajio/development/rbsky/target/debug/rbsky-nvim",
+	bin = "/home/sanhajio/development/pp/growth/rbsky/target/debug/rbsky-nvim",
 	bufname = "neosky.social",
 }
 
@@ -42,24 +42,25 @@ end
 
 M.read = function()
 	local feed_json = vim.fn.rpcrequest(M.job_id, "read")
-	print(vim.inspect(feed_json))
+	log.debg(vim.inspect(feed_json))
 
 	-- Decode the JSON string to a Lua table
 	local content = vim.fn.json_decode(feed_json)
 
 	-- Optionally log or process the content table
-	-- log.info(vim.inspect(content))
+	log.info(vim.inspect(content))
 	if content == nil then
 		log.error("No content to display")
 		return
 	end
 
-	--[[
 	local bufnr = M._find_or_create_buffer("neosky.social")
-	local posts = {}
+	log.info("item: ", content)
+	M.posts = {}
 	for _, item in ipairs(content) do
+		log.info("item: ", content)
 		table.insert(
-			posts,
+			M.posts,
 			string.format(
 				"%s		@%s		%s",
 				item.post.author.displayName,
@@ -68,16 +69,12 @@ M.read = function()
 			)
 		)
 		for line in item.post.record.text:gmatch("([^\n]*)\n?") do
-			table.insert(posts, line)
+			table.insert(M.posts, line)
 		end
 	end
-	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, posts)
+	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, M.posts)
 	vim.api.nvim_set_current_buf(bufnr)
 	vim.api.nvim_win_set_cursor(0, { 1, 0 })
-
-	-- Optionally clear g:neosky_feed after processing
-	-- vim.api.nvim_set_var("neosky_feed", vim.fn.json_encode({}))
-		]]
 	--
 end
 
