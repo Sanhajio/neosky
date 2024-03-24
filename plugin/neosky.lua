@@ -28,6 +28,9 @@ end, {
 vim.api.nvim_create_user_command("NeoSkyReload", function()
 	-- write function here
 	package.loaded["neosky"] = nil
+	package.loaded["neosky.executor"] = nil
+	package.loaded["neosky.handler"] = nil
+	package.loaded["neosky.config"] = nil
 	require("neosky")
 	log.info("NeoSkyReload: Reloaded the plugin successfully.")
 end, {

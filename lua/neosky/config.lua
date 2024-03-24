@@ -1,7 +1,7 @@
 local M = {}
 
 M = {
-	bin = "/home/sanhajio/development/rbsky/target/debug/rbsky-nvim",
+	bin = "/home/sanhajio/development/pp/growth/rbsky/target/debug/rbsky-nvim",
 	bufname = "neosky.social",
 }
 

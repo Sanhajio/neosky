@@ -12,12 +12,14 @@ M.update_buffer = function(config, content)
 
 	local current_line = 1 -- Keep track of the current line number
 	for _, item in ipairs(content) do
+		log.info(item.post)
 		-- Main post
 		local post_info = string.format(
-			"%s\t@%s\t%s",
+			"%s\t@%s\t%s\t%s",
 			item.post.author.displayName,
 			item.post.author.handle,
-			item.post.record.createdAt
+			item.post.record.createdAt,
+			item.post.cid
 		)
 		table.insert(M.posts, post_info)
 		M.line_to_post_map[current_line] = item.post.cid
@@ -70,8 +72,9 @@ M.read = function(executor, config)
 end
 
 M.update_feed = function(executor)
-	log.info("Calling Update feed with %s")
-	local feed_json = vim.fn.rpcrequest(executor.job_id, "update")
+	log.info("Calling Update feed")
+	local answer = vim.rpcnotify(executor.job_id, "update")
+	log.info(string.format("reading data from job_id: <%s>", answer))
 end
 
 return M
