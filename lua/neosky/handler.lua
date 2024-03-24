@@ -5,16 +5,7 @@ local M = {}
 -- TODO: find a way to keep track of the posts lines, from line 1 -> 10; post did, etc.
 M.buffer = require("neosky.buffer")
 
-M.read = function(executor, config)
-	log.info(string.format("reading data from job_id: <%d>", executor.job_id))
-	local feed_json = vim.fn.rpcrequest(executor.job_id, "read")
-	local content = vim.fn.json_decode(feed_json)
-
-	if content == nil then
-		log.error("No content to display")
-		return
-	end
-
+M.update_buffer = function(config, content)
 	local bufnr = M.buffer._find_or_create_buffer(config)
 	M.posts = {}
 	M.line_to_post_map = {} -- Reset the map for fresh mapping
@@ -65,8 +56,22 @@ M.read = function(executor, config)
 	vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
-M.update_feed = function(feed_data)
-	log.info(string.format("Calling Update feed with %s", feed_data))
+M.read = function(executor, config)
+	log.info(string.format("reading data from job_id: <%d>", executor.job_id))
+	local feed_json = vim.fn.rpcrequest(executor.job_id, "read")
+	local content = vim.fn.json_decode(feed_json)
+
+	if content == nil then
+		log.error("No content to display")
+		return
+	end
+
+	M.update_buffer(config, content)
+end
+
+M.update_feed = function(executor)
+	log.info("Calling Update feed with %s")
+	local feed_json = vim.fn.rpcrequest(executor.job_id, "update")
 end
 
 return M

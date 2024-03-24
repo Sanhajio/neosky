@@ -12,6 +12,10 @@ M.read = function()
 	M.handler.read(M.executor, M.config)
 end
 
+M.update_feed = function()
+	M.handler.update_feed(M.executor, M.config)
+end
+
 M.stop = function()
 	M.executor.stop()
 end

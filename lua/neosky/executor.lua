@@ -18,6 +18,7 @@ end
 M.stop = function()
 	log.info(string.format("Job rbsky with job_id: <%d> stopped successfully", M.job_id))
 	vim.fn.jobstop(M.job_id)
+	M.job_id = nil
 end
 
 return M
