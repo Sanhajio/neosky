@@ -25,6 +25,12 @@ end, {
 	nargs = "*",
 })
 
+vim.api.nvim_create_user_command("NeoSkyQuickStart", function()
+	require("neosky").quick_start()
+end, {
+	nargs = "*",
+})
+
 vim.api.nvim_create_user_command("NeoSkyReload", function()
 	-- write function here
 	package.loaded["neosky"] = nil
