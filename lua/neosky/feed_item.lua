@@ -1,24 +1,59 @@
+local log = require("plenary.log")
 local FeedItem = {}
 FeedItem.__index = FeedItem
 
-function FeedItem.new(postData)
+function FeedItem.from_post_data(data)
 	local self = setmetatable({}, FeedItem)
-	self.postData = postData
-	self.author = postData.author
-	self.cid = postData.cid
-	self.createdAt = postData.record.createdAt
-	self.text = postData.record.text
-	self.likeCount = postData.likeCount
-	self.replyCount = postData.replyCount
-	self.repostCount = postData.repostCount
-	self.uri = postData.uri
-	self.reason = postData.reason
+	self.postData = data
+	self.author = data.author
+	self.cid = data.cid
+	self.createdAt = data.record.createdAt
+	self.text = data.record.text
+	self.likeCount = data.likeCount
+	self.replyCount = data.replyCount
+	self.repostCount = data.repostCount
+	self.uri = data.uri
+	self.reason = data.reason
 
-	-- Check if the post is a reply and capture the relevant details
-	if postData.record.reply then
+	-- Handle replies
+	if data.reply then
 		self.isReply = true
-		self.replyParentCid = postData.record.reply.parent.cid
-		self.replyRootCid = postData.record.reply.root.cid
+		self.replyParentCid = data.reply.parent.cid
+		self.replyRootCid = data.reply.root.cid
+	else
+		self.isReply = false
+	end
+
+	return self
+end
+
+function FeedItem.new(data)
+	log.info(vim.inspect(data))
+	local self = setmetatable({}, FeedItem)
+	self.postData = data.post
+	self.author = data.post.author
+	self.cid = data.post.cid
+	self.createdAt = data.post.record.createdAt
+	self.text = data.post.record.text
+	self.likeCount = data.post.likeCount
+	self.replyCount = data.post.replyCount
+	self.repostCount = data.post.repostCount
+	self.uri = data.post.uri
+	self.reason = data.post.reason
+
+	-- Handle replies
+	if data.parent then
+		self.isReply = true
+		self.replyParentCid = data.parent.cid
+		self.replyRootCid = data.root.cid
+
+		-- Optionally, store the parent and root post details directly in the FeedItem
+		if data.parent then
+			self.parentPost = data.parent
+		end
+		if data.root then
+			self.rootPost = data.root
+		end
 	else
 		self.isReply = false
 	end
