@@ -1,7 +1,8 @@
 local M = {}
 
+-- TODO: add a setup function that sets up the config: check obsidian.nvim
 M = {
-	bin = "/home/sanhajio/development/pp/growth/rbsky/target/debug/rbsky-nvim",
+	bin = "/home/sanhajio/development/growth/rbsky/target/debug/rbsky-nvim",
 	bufname = "neosky.social",
 }
 
