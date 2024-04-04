@@ -10,6 +10,7 @@ local function quick_start_delayed()
 end
 
 M.start = function()
+	M.config.setup()
 	M.executor.start(M.config)
 end
 
@@ -27,7 +28,7 @@ M.quick_start = function()
 		M.executor.start(M.config)
 	end
 	M.handler.update_feed(M.executor)
-	vim.defer_fn(quick_start_delayed, 5000)
+	vim.defer_fn(quick_start_delayed, 6000)
 end
 
 M.stop = function()
