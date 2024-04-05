@@ -4,15 +4,12 @@ local M = {}
 M.buffer = require("neosky.buffer")
 M.FeedItem = require("neosky.feed_item")
 
-M.posts = {}
-M.line_to_post_map = {}
-
 local function get_current_cursor_pos(bufnr)
 	local success, current_cursor_pos = pcall(vim.api.nvim_win_get_cursor, bufnr)
 	if not success then
 		current_cursor_pos = { 1, 0 }
 	end
-	log.info(string.format("current_cursor_pos: %s", current_cursor_pos))
+	log.info(string.format("current_cursor_pos: %s", vim.inspect(current_cursor_pos)))
 	return current_cursor_pos
 end
 
@@ -114,6 +111,9 @@ M.update_buffer_flat = function(config, content, reverse)
 end
 
 M.update_buffer = function(config, content, reverse)
+	M.posts = {}
+	M.line_to_post_map = {}
+
 	-- log.info(config)
 	if config.view == "threaded" then
 		M.update_buffer_threaded(config, content, reverse)
@@ -124,7 +124,7 @@ M.update_buffer = function(config, content, reverse)
 	end
 end
 
-M.read = function(executor, config)
+M.read = function(config, executor)
 	-- log.info(string.format("reading data from job_id: <%d>", executor.job_id))
 	local feed_json = vim.fn.rpcrequest(executor.job_id, "read")
 	local content = vim.fn.json_decode(feed_json)
@@ -148,14 +148,12 @@ M.fetch_more = function(config, executor)
 	local bufnr = M.buffer._find_or_create_buffer(config)
 	local total_lines = vim.api.nvim_buf_line_count(0)
 	vim.api.nvim_buf_set_lines(bufnr, total_lines, -1, false, { "Loading More ..." })
-
-	-- local feed_json = vim.fn.rpcrequest(executor.job_id, "more")
-	-- local content = vim.fn.json_decode(feed_json)
-	-- if content == nil then
-	-- 	log.error("No content to display")
-	-- 	return
-	-- end
-	-- M.update_buffer(config, content)
+	local last_cid = M.line_to_post_map[#M.line_to_post_map]
+	local answer = vim.rpcnotify(executor.job_id, "more", last_cid)
+	log.info(string.format("answer returns: <%s>", answer))
+	vim.defer_fn(function()
+		M.read(config, executor)
+	end, 4000)
 end
 
 M.refresh_timeline = function(config, executor)
@@ -168,13 +166,11 @@ M.refresh_timeline = function(config, executor)
 		false,
 		{ "Refreshing Timeline ...", M.buffer.create_separator_line(config) }
 	)
-	-- local feed_json = vim.fn.rpcrequest(executor.job_id, "refresh")
-	-- local content = vim.fn.json_decode(feed_json)
-	-- if content == nil then
-	-- 	log.error("No content to display")
-	-- 	return
-	-- end
-	-- M.update_buffer(config, content, true)
+	local answer = vim.rpcnotify(executor.job_id, "update")
+	log.info(string.format("answer returns: <%s>", answer))
+	vim.defer_fn(function()
+		M.read(config, executor)
+	end, 1000)
 end
 
 return M

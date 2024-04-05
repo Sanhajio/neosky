@@ -28,7 +28,7 @@ function FeedItem.from_post_data(data)
 end
 
 function FeedItem.new(data)
-	log.info(vim.inspect(data))
+	-- log.info(vim.inspect(data))
 	local self = setmetatable({}, FeedItem)
 	self.postData = data.post
 	self.author = data.post.author

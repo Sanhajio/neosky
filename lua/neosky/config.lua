@@ -28,9 +28,11 @@ M.setup = function(opts)
 			if current_line >= total_lines then
 				local last_line = vim.api.nvim_buf_get_lines(bufnr, total_lines - 1, total_lines, false)[1]
 				if last_line ~= "Loading More ..." then
+					M.cursor_moved = false
 					neosky.handler.fetch_more(M, executor)
 				end
 			elseif current_line <= 1 and M.cursor_moved then
+				M.cursor_moved = false
 				local first_line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
 				log.info(string.format("first line contains %s", first_line))
 				if first_line ~= "Refreshing Timeline ..." then

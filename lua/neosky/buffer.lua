@@ -4,7 +4,7 @@ local M = {}
 M._find_or_create_buffer = function(config)
 	-- Check if the buffer already exists
 	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-		log.info(vim.api.nvim_buf_get_name(bufnr))
+		-- log.info(vim.api.nvim_buf_get_name(bufnr))
 		local suffix = config.bufname
 		if vim.api.nvim_buf_get_name(bufnr):sub(-#suffix) == suffix then
 			return bufnr

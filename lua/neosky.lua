@@ -5,7 +5,7 @@ M.handler = require("neosky.handler")
 M.config = require("neosky.config")
 
 local function quick_start_delayed()
-	M.handler.read(M.executor, M.config)
+	M.handler.read(M.config, M.executor)
 	M.stop()
 end
 
@@ -15,7 +15,7 @@ M.start = function()
 end
 
 M.read = function()
-	M.handler.read(M.executor, M.config)
+	M.handler.read(M.config, M.executor)
 end
 
 M.update_feed = function()
