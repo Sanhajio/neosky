@@ -30,7 +30,7 @@ M.create_separator_line = function(config)
 		end
 	end
 
-	local separator = string.rep("-", width) -- Create a string of dashes that matches the buffer's width
+	local separator = string.rep("-", width - 30) -- Create a string of dashes that matches the buffer's width
 	return separator
 end
 
