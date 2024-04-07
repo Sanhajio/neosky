@@ -1,5 +1,5 @@
 local log = require("plenary.log")
-
+local uv = vim.loop
 local M = {}
 
 -- TODO: add a setup function that sets up the config: check obsidian.nvim
@@ -16,33 +16,51 @@ M.setup = function(opts)
 	M.cursor_moved = false
 	local group = vim.api.nvim_create_augroup("neosky", { clear = true })
 
+	-- TODO: perhaps find a way to refacot this autocmd
 	vim.api.nvim_create_autocmd("CursorMoved", {
 		group = group,
 		pattern = "*",
 		callback = function()
+			-- TODO: Refactor: variable declaration
+			local timer = vim.loop.new_timer()
 			local neosky = require("neosky")
 			local executor = neosky.executor
+			local cooldown = 0
 			local current_line = vim.api.nvim_win_get_cursor(0)[1]
 			local total_lines = vim.api.nvim_buf_line_count(0)
 			local bufnr = vim.api.nvim_get_current_buf()
-			if current_line >= total_lines then
+			-- TODO: Refactor: Load More
+			if current_line >= total_lines and cooldown == 0 then
+				cooldown = 1
+				timer:start(6000, 0, function()
+					log.info("setting the cooldown to 0")
+					cooldown = 0
+				end)
 				local last_line = vim.api.nvim_buf_get_lines(bufnr, total_lines - 1, total_lines, false)[1]
 				if last_line ~= "Loading More ..." then
 					M.cursor_moved = false
+
 					neosky.handler.fetch_more(M, executor)
 				end
-			elseif current_line <= 1 and M.cursor_moved then
-				M.cursor_moved = false
-				local first_line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
-				log.info(string.format("first line contains %s", first_line))
-				if first_line ~= "Refreshing Timeline ..." then
-					neosky.handler.refresh_timeline(M, executor)
-				end
+			elseif current_line <= 1 and M.cursor_moved and cooldown == 0 then
+				cooldown = 1
+				-- timer:start(6000, 0, function()
+				-- 	log.info("setting the cooldown to 0")
+				-- 	cooldown = 0
+				-- end)
+				-- M.cursor_moved = false
+				-- local first_line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
+				-- log.info(string.format("first line contains %s", first_line))
+				-- if first_line ~= "Refreshing Timeline ..." then
+				-- 	-- TODO: Cooldown for refreshing the timeline
+				-- 	local timer = vim.loop.new_timer()
+
+				-- 	neosky.handler.refresh_timeline(M, executor)
+				-- end
+				-- TODO: Init
 			elseif current_line > 1 and current_line < total_lines then
 				M.cursor_moved = true
 			end
-			-- TODO: I think this deletes the autocmd after its run
-			-- return true
 		end,
 	})
 end

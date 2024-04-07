@@ -4,17 +4,13 @@ local M = {}
 M.buffer = require("neosky.buffer")
 M.FeedItem = require("neosky.feed_item")
 
-local function get_current_cursor_pos(bufnr)
-	local success, current_cursor_pos = pcall(vim.api.nvim_win_get_cursor, bufnr)
-	if not success then
-		current_cursor_pos = { 1, 0 }
-	end
-	log.info(string.format("current_cursor_pos: %s", vim.inspect(current_cursor_pos)))
+local function get_current_cursor_pos()
+	local current_cursor_pos = vim.api.nvim_win_get_cursor(0)
 	return current_cursor_pos
 end
 
 local function set_current_cursor_pos(bufnr, cursor_pos)
-	local success, current_cursor_pos = pcall(vim.api.nvim_win_set_cursor, bufnr, cursor_pos)
+	local current_cursor_pos = pcall(vim.api.nvim_win_set_cursor, 0, cursor_pos)
 end
 
 local function insert_line(t, line, reverse)
@@ -31,7 +27,7 @@ local function display_posts(bufnr, cursor_pos)
 	vim.api.nvim_set_current_buf(bufnr)
 	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, M.posts)
 
-	set_current_cursor_pos(bufnr, cursor_pos)
+	set_current_cursor_pos(0, cursor_pos)
 end
 
 local function append_to_posts(prefix, config, item, reverse, current_line)
@@ -59,7 +55,7 @@ end
 
 M.update_buffer_threaded = function(config, content, reverse)
 	local bufnr = M.buffer._find_or_create_buffer(config)
-	local current_cursor_pos = get_current_cursor_pos(bufnr)
+	local current_cursor_pos = get_current_cursor_pos()
 
 	local current_line = 1
 	for _, item in ipairs(content) do
@@ -97,7 +93,7 @@ end
 
 M.update_buffer_flat = function(config, content, reverse)
 	local bufnr = M.buffer._find_or_create_buffer(config)
-	local current_cursor_pos = get_current_cursor_pos(bufnr)
+	local current_cursor_pos = get_current_cursor_pos()
 	local current_line = 1
 	local prefix = ""
 	for _, item in ipairs(content) do
@@ -114,7 +110,6 @@ M.update_buffer = function(config, content, reverse)
 	M.posts = {}
 	M.line_to_post_map = {}
 
-	-- log.info(config)
 	if config.view == "threaded" then
 		M.update_buffer_threaded(config, content, reverse)
 	elseif config.view == "flat" then
@@ -153,7 +148,7 @@ M.fetch_more = function(config, executor)
 	log.info(string.format("answer returns: <%s>", answer))
 	vim.defer_fn(function()
 		M.read(config, executor)
-	end, 4000)
+	end, 6000)
 end
 
 M.refresh_timeline = function(config, executor)
@@ -170,7 +165,7 @@ M.refresh_timeline = function(config, executor)
 	log.info(string.format("answer returns: <%s>", answer))
 	vim.defer_fn(function()
 		M.read(config, executor)
-	end, 1000)
+	end, 6000)
 end
 
 return M
