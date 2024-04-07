@@ -2,10 +2,32 @@ local log = require("plenary.log")
 
 local M = {}
 
+M._cmd = function(config)
+	local cmd = ""
+	if config.auto_update then
+		cmd = string.format(
+			"%s -c '%s --auto-update-interval %s --log-level %s --auto-update'",
+			config.shell,
+			config.bin,
+			config.auto_update_interval,
+			config.log_level
+		)
+	else
+		cmd = string.format(
+			"%s -c '%s --auto-update-interval %s --log-level %s'",
+			config.shell,
+			config.bin,
+			config.auto_update_interval,
+			config.log_level
+		)
+	end
+	return cmd
+end
+
 M.start = function(config)
-	log.info(string.format("Starting %s", config.bin))
-	local bin = config.bin
-	local job_id = vim.fn.jobstart(bin, { rpc = true })
+	local cmd = M._cmd(config)
+	log.info(string.format("Starting %s", cmd))
+	local job_id = vim.fn.jobstart(cmd, { rpc = true })
 	if job_id == "0" then
 		log.error("Invalid Arguments")
 	elseif job_id == "-1" then
