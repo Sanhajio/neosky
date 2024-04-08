@@ -54,21 +54,6 @@ M._refresh = function(timer, neosky, bufnr)
 	end
 end
 
-M.cursor_listener = function()
-	local timer = vim.loop.new_timer()
-	local neosky = require("neosky")
-	local current_line = vim.api.nvim_win_get_cursor(0)[1]
-	local total_lines = vim.api.nvim_buf_line_count(0)
-	local bufnr = vim.api.nvim_get_current_buf()
-	if current_line >= total_lines and neosky.executor.cooldown == 0 then
-		M._load_more(timer, neosky, bufnr, total_lines)
-	elseif current_line <= 1 and M.cursor_moved and neosky.executor.cooldown == 0 then
-		M._refresh(timer, neosky, bufnr)
-	elseif current_line > 1 and current_line < total_lines then
-		M.cursor_moved = true
-	end
-end
-
 -- TODO: change bufname, to bufextension: neosky.social, so that I can have a file named: following.neosky.social and another one gamedev.neosky.social
 -- TODO: add a filetype and colorscheme for the filetype neosky.social
 
@@ -87,7 +72,20 @@ M.setup = function(opts)
 	vim.api.nvim_create_autocmd("CursorMoved", {
 		group = group,
 		pattern = "*",
-		callback = M.cursor_listener,
+		callback = function()
+			local timer = vim.loop.new_timer()
+			local neosky = require("neosky")
+			local current_line = vim.api.nvim_win_get_cursor(0)[1]
+			local total_lines = vim.api.nvim_buf_line_count(0)
+			local bufnr = vim.api.nvim_get_current_buf()
+			if current_line >= total_lines and neosky.executor.cooldown == 0 then
+				M._load_more(timer, neosky, bufnr, total_lines)
+			elseif current_line <= 1 and M.cursor_moved and neosky.executor.cooldown == 0 then
+				M._refresh(timer, neosky, bufnr)
+			elseif current_line > 1 and current_line < total_lines then
+				M.cursor_moved = true
+			end
+		end,
 	})
 end
 

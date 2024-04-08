@@ -4,6 +4,30 @@ local M = {}
 M.buffer = require("neosky.buffer")
 M.FeedItem = require("neosky.feed_item")
 
+local function get_last_item_from_table(tbl)
+	local max_key = nil
+
+	for key, _ in pairs(tbl) do
+		if type(key) == "number" and (max_key == nil or key > max_key) then
+			max_key = key
+		end
+	end
+
+	return max_key
+end
+
+local function get_first_item_from_table(tbl)
+	local min_key = nil
+
+	for key, _ in pairs(tbl) do
+		if type(key) == "number" and (min_key == nil or key < min_key) then
+			min_key = key
+		end
+	end
+
+	return min_key
+end
+
 local function get_current_cursor_pos()
 	local current_cursor_pos = vim.api.nvim_win_get_cursor(0)
 	return current_cursor_pos
@@ -143,7 +167,7 @@ M.fetch_more = function(config, executor)
 	local bufnr = M.buffer._find_or_create_buffer(config)
 	local total_lines = vim.api.nvim_buf_line_count(0)
 	vim.api.nvim_buf_set_lines(bufnr, total_lines, -1, false, { "Loading More ..." })
-	local last_cid = M.line_to_post_map[#M.line_to_post_map]
+	local last_cid = M.line_to_post_map[get_last_item_from_table(M.line_to_post_map)]
 	local answer = vim.rpcnotify(executor.job_id, "more", last_cid)
 	log.info(string.format("answer returns: <%s>", answer))
 	vim.defer_fn(function()
@@ -161,7 +185,8 @@ M.refresh_timeline = function(config, executor)
 		false,
 		{ "Refreshing Timeline ...", M.buffer.create_separator_line(config) }
 	)
-	local answer = vim.rpcnotify(executor.job_id, "update")
+	local first_cid = M.line_to_post_map[get_first_item_from_table(M.line_to_post_map)]
+	local answer = vim.rpcnotify(executor.job_id, "update", first_cid)
 	log.info(string.format("answer returns: <%s>", answer))
 	vim.defer_fn(function()
 		M.read(config, executor)

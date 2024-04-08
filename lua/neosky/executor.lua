@@ -2,6 +2,8 @@ local log = require("plenary.log")
 
 local M = {}
 
+M.cooldown = 0
+
 M._cmd = function(config)
 	local cmd = ""
 	if config.auto_update then
