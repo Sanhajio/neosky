@@ -14,6 +14,36 @@ function FeedItem.from_post_data(data)
 	self.repostCount = data.repostCount
 	self.uri = data.uri
 	self.reason = data.reason
+	self.embeds = {} -- Initialize embeds as an empty table
+
+	if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
+		for _, img in ipairs(data.embed.images) do
+			table.insert(self.embeds, {
+				alt = img.alt,
+				fullsize = img.fullsize,
+				thumb = img.thumb,
+			})
+		end
+	else
+		self.embeds = data.embed
+	end
+
+	-- Check for embeds in the record data and extract image details
+	-- if
+	-- 	data.record
+	-- 	and data.record.embed
+	-- 	and data.record.embed["$type"] == "app.bsky.embed.images"
+	-- 	and data.record.embed.images
+	-- then
+	-- 	for _, img in ipairs(data.record.embed.images) do
+	-- 		table.insert(self.embeds, {
+	-- 			alt = img.alt or "",
+	-- 			fullsize = img.image and img.image["$type"] == "blob" and img.image.ref["$link"],
+	-- 			-- Assuming the fullsize image URL needs to be constructed or is directly available
+	-- 			thumb = img.thumb, -- Assuming there is a thumb field directly
+	-- 		})
+	-- 	end
+	-- end
 
 	-- Handle replies
 	if data.reply then
@@ -40,6 +70,33 @@ function FeedItem.new(data)
 	self.repostCount = data.post.repostCount
 	self.uri = data.post.uri
 	self.reason = data.post.reason
+
+	if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
+		for _, img in ipairs(data.embed.images) do
+			table.insert(self.embeds, {
+				alt = img.alt,
+				fullsize = img.fullsize,
+				thumb = img.thumb,
+			})
+		end
+	end
+
+	-- Check for embeds in the record data and extract image details
+	if
+		data.record
+		and data.record.embed
+		and data.record.embed["$type"] == "app.bsky.embed.images"
+		and data.record.embed.images
+	then
+		for _, img in ipairs(data.record.embed.images) do
+			table.insert(self.embeds, {
+				alt = img.alt or "",
+				fullsize = img.image and img.image["$type"] == "blob" and img.image.ref["$link"],
+				-- Assuming the fullsize image URL needs to be constructed or is directly available
+				thumb = img.thumb, -- Assuming there is a thumb field directly
+			})
+		end
+	end
 
 	-- Handle replies
 	if data.parent then
@@ -81,6 +138,10 @@ function FeedItem:getFooter()
 		footer = string.format("%s, Reason: Repost By %s", footer, self.reason.by.displayName)
 	end
 	return footer
+end
+
+function FeedItem:getEmbeddedImages()
+	return self.embeds
 end
 
 return FeedItem
