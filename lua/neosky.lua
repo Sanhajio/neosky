@@ -3,6 +3,7 @@ local M = {}
 M.executor = require("neosky.executor")
 M.handler = require("neosky.handler")
 M.config = require("neosky.config")
+M.popup = require("neosky.popup")
 
 local function quick_start_delayed()
 	M.handler.read(M.config, M.executor)

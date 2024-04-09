@@ -42,3 +42,9 @@ vim.api.nvim_create_user_command("NeoSkyReload", function()
 end, {
 	nargs = "*",
 })
+
+vim.api.nvim_create_user_command("NeoSkyPost", function()
+	require("neosky").popup.create_popup("Post to Bluesky", "English", 300)
+end, {
+	nargs = "*",
+})
