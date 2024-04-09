@@ -144,8 +144,8 @@ M.update_buffer = function(config, content, reverse)
 end
 
 M.read = function(config, executor)
-	-- log.info(string.format("reading data from job_id: <%d>", executor.job_id))
 	local feed_json = vim.fn.rpcrequest(executor.job_id, "read")
+	log.info(string.format("retrieving feed_json: <%s>", feed_json))
 	local content = vim.fn.json_decode(feed_json)
 
 	if content == nil then
@@ -191,6 +191,12 @@ M.refresh_timeline = function(config, executor)
 	vim.defer_fn(function()
 		M.read(config, executor)
 	end, 6000)
+end
+
+M.post = function(executor, content)
+	log.info(string.format("posting %s", content))
+	local answer = vim.rpcnotify(executor.job_id, "post", content)
+	log.info(string.format("answer returns: <%s>", answer))
 end
 
 return M

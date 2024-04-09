@@ -73,9 +73,12 @@ M.create_popup = function(title, language, max)
 end
 
 M.submit_post = function(bufnr)
+	local neosky = require("neosky")
 	local content = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 	-- Send content to BlueSky
-	print("Posting to BlueSky: " .. table.concat(content, "\n"))
+	log.info("Posting to BlueSky: " .. table.concat(content, "\n"))
+	neosky.handler.post(neosky.executor, content)
+
 	-- Close the popup after posting
 	vim.api.nvim_buf_delete(bufnr, { force = true })
 end

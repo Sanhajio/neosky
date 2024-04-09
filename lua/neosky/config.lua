@@ -71,7 +71,7 @@ M.setup = function(opts)
 	local group = vim.api.nvim_create_augroup("neosky", { clear = true })
 	vim.api.nvim_create_autocmd("CursorMoved", {
 		group = group,
-		pattern = "*",
+		pattern = "neosky.social",
 		callback = function()
 			local timer = vim.loop.new_timer()
 			local neosky = require("neosky")
