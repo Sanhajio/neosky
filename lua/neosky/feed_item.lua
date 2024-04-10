@@ -14,19 +14,17 @@ function FeedItem.from_post_data(data)
 	self.repostCount = data.repostCount
 	self.uri = data.uri
 	self.reason = data.reason
-	self.embeds = {} -- Initialize embeds as an empty table
-
-	if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
-		for _, img in ipairs(data.embed.images) do
-			table.insert(self.embeds, {
-				alt = img.alt,
-				fullsize = img.fullsize,
-				thumb = img.thumb,
-			})
-		end
-	else
-		self.embeds = data.embed
+	self.postEmbed = {} -- Initialize embeds as an empty table
+	self.recordEmbed = {} -- Initialize embeds as an empty table
+	if data.embed then
+		self.postEmbed = data.embed
 	end
+
+	if data.record.embed then
+		self.recordEmbed = data.record.embed
+	end
+	log.info(vim.inspect(self.postEmbed))
+	log.info(vim.inspect(self.recordEmbed))
 
 	-- Check for embeds in the record data and extract image details
 	-- if
@@ -57,6 +55,7 @@ function FeedItem.from_post_data(data)
 	return self
 end
 
+-- TODO: weird how new and from are different
 function FeedItem.new(data)
 	-- log.info(vim.inspect(data))
 	local self = setmetatable({}, FeedItem)
@@ -70,33 +69,44 @@ function FeedItem.new(data)
 	self.repostCount = data.post.repostCount
 	self.uri = data.post.uri
 	self.reason = data.post.reason
-
-	if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
-		for _, img in ipairs(data.embed.images) do
-			table.insert(self.embeds, {
-				alt = img.alt,
-				fullsize = img.fullsize,
-				thumb = img.thumb,
-			})
-		end
+	self.postEmbed = {} -- Initialize embeds as an empty table
+	self.recordEmbed = {} -- Initialize embeds as an empty table
+	if data.post.embed then
+		self.postEmbed = data.post.embed
 	end
+
+	if data.post.record.embed then
+		self.recordEmbed = data.post.record.embed
+	end
+	log.info(vim.inspect(self.postEmbed))
+	log.info(vim.inspect(self.recordEmbed))
+
+	-- if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
+	-- 	for _, img in ipairs(data.embed.images) do
+	-- 		table.insert(self.embeds, {
+	-- 			alt = img.alt,
+	-- 			fullsize = img.fullsize,
+	-- 			thumb = img.thumb,
+	-- 		})
+	-- 	end
+	-- end
 
 	-- Check for embeds in the record data and extract image details
-	if
-		data.record
-		and data.record.embed
-		and data.record.embed["$type"] == "app.bsky.embed.images"
-		and data.record.embed.images
-	then
-		for _, img in ipairs(data.record.embed.images) do
-			table.insert(self.embeds, {
-				alt = img.alt or "",
-				fullsize = img.image and img.image["$type"] == "blob" and img.image.ref["$link"],
-				-- Assuming the fullsize image URL needs to be constructed or is directly available
-				thumb = img.thumb, -- Assuming there is a thumb field directly
-			})
-		end
-	end
+	-- if
+	-- 	data.record
+	-- 	and data.record.embed
+	-- 	and data.record.embed["$type"] == "app.bsky.embed.images"
+	-- 	and data.record.embed.images
+	-- then
+	-- 	for _, img in ipairs(data.record.embed.images) do
+	-- 		table.insert(self.embeds, {
+	-- 			alt = img.alt or "",
+	-- 			fullsize = img.image and img.image["$type"] == "blob" and img.image.ref["$link"],
+	-- 			-- Assuming the fullsize image URL needs to be constructed or is directly available
+	-- 			thumb = img.thumb, -- Assuming there is a thumb field directly
+	-- 		})
+	-- 	end
+	-- end
 
 	-- Handle replies
 	if data.parent then

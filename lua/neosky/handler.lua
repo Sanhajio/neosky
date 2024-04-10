@@ -146,24 +146,15 @@ end
 M.read = function(config, executor)
 	local feed_json = vim.fn.rpcrequest(executor.job_id, "read")
 	-- log.info(string.format("retrieving feed_json: <%s>", feed_json))
+
 	local content = vim.fn.json_decode(feed_json)
 	-- log.info(string.format("retrieving feed_json: <%s>", vim.inspect(content)))handl
-	if content == nil then
-		return
-	end
-	for _, v in ipairs(content) do
-		if v ~= nil then
-			log.info(string.format("content: <%s>", vim.inspect(content)))
-			log.info(string.format("getting embeds: <%s>", vim.inspect(M.FeedItem.new(v):getEmbeddedImages())))
-		end
-	end
-
 	if content == nil then
 		log.error("No content to display")
 		return
 	end
 
-	-- M.update_buffer(config, content)
+	M.update_buffer(config, content)
 end
 
 M.update_feed = function(executor)
