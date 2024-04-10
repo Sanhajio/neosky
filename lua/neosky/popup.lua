@@ -3,13 +3,28 @@ local nui = require("nui.popup")
 local event = require("nui.utils.autocmd").event
 local M = {}
 
-local function update_status_line(popup, text, language, max)
-	local character_count = #text
-	local status_line_content = string.format("%s\t, %s/300", language, character_count)
+local function character_count(lines)
+	local char_count = 0
+	for _, line in ipairs(lines) do
+		char_count = char_count + #line
+		char_count = char_count + 1
+	end
+	return char_count
+end
+
+-- TODO: add max characters as a parameter instead of 300
+local function update_status_line(popup, bufnr, language)
+	local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+	local char_count = character_count(lines)
+	local status_line_content = string.format("%s\t, %s/300", language, char_count)
 	popup.border:set_text("bottom", status_line_content)
 end
 
-M.create_popup = function(title, language, max)
+-- TODO: popup_mode would be either:
+-- limit: to limit to 300 characters: this seems to be too complex to implement
+-- extend: to send response posts for the remaining
+-- For now I shall only have limit
+M.create_popup = function(title, language, max, popup_mode)
 	local bufnr = vim.api.nvim_create_buf(false, true)
 	local width = math.floor(vim.o.columns * 0.5)
 	local height = math.floor(vim.o.lines * 0.3)
@@ -45,9 +60,10 @@ M.create_popup = function(title, language, max)
 		buffer = bufnr,
 		callback = function()
 			local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+			local char_count = character_count(lines)
 			local text = table.concat(lines, "")
-			log.info(string.format("lines: %s, text: %s lines.len: %s text.len: %s", lines, text, #lines, #text))
-			update_status_line(popup, text, language, max)
+			log.info(string.format("lines: %s, text: %s lines.len: %s text.len: %s", lines, text, #lines, char_count))
+			update_status_line(popup, bufnr, language)
 		end,
 	})
 
