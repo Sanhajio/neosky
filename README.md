@@ -7,3 +7,5 @@
 
 dependencies:
   - plenary
+
+- nuke db: rm -rf ~/.config/bsky/bsky.db/

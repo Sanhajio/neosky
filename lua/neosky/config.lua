@@ -8,6 +8,11 @@ M = {
 		view = "threaded",
 		auto_update = false,
 		auto_update_interval = 300,
+		-- images: contains
+		-- hover: Only when the cursor is on the link
+		-- static: show images all the time
+		-- nil: skip images
+		images = "static",
 		log_level = "info",
 		signature = " #neosky",
 		shell = "/bin/sh",

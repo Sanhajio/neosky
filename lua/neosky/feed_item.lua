@@ -14,17 +14,37 @@ function FeedItem.from_post_data(data)
 	self.repostCount = data.repostCount
 	self.uri = data.uri
 	self.reason = data.reason
+	self.embeds = {} -- Initialize embeds as an empty table
 	self.postEmbed = {} -- Initialize embeds as an empty table
 	self.recordEmbed = {} -- Initialize embeds as an empty table
 	if data.embed then
 		self.postEmbed = data.embed
 	end
 
+	-- Handling image#view embed
+	if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
+		for _, img in ipairs(data.embed.images) do
+			table.insert(self.embeds, {
+				alt = img.alt,
+				fullsize = img.fullsize,
+				thumb = img.thumb,
+				width = img.aspectRatio.width,
+				height = img.aspectRatio.height,
+			})
+		end
+	end
+
 	if data.record.embed then
 		self.recordEmbed = data.record.embed
 	end
-	log.info(vim.inspect(self.postEmbed))
-	log.info(vim.inspect(self.recordEmbed))
+	-- TODO: add a embed not supported
+	-- TODO: images add a image view: preview or flat
+
+	-- log.info(vim.inspect(self.uri), vim.inspect(self.author))
+	-- log.info("post embed")
+	-- log.info(vim.inspect(self.postEmbed))
+	-- log.info("record embed")
+	-- log.info(vim.inspect(self.recordEmbed))
 
 	-- Check for embeds in the record data and extract image details
 	-- if
@@ -71,25 +91,40 @@ function FeedItem.new(data)
 	self.reason = data.post.reason
 	self.postEmbed = {} -- Initialize embeds as an empty table
 	self.recordEmbed = {} -- Initialize embeds as an empty table
+	self.embeds = {} -- Initialize embeds as an empty table
 	if data.post.embed then
 		self.postEmbed = data.post.embed
+	end
+
+	-- Handling image#view embed
+	if data.post.embed and data.post.embed["$type"] == "app.bsky.embed.images#view" and data.post.embed.images then
+		for _, img in ipairs(data.post.embed.images) do
+			table.insert(self.embeds, {
+				alt = img.alt,
+				fullsize = img.fullsize,
+				thumb = img.thumb,
+			})
+		end
 	end
 
 	if data.post.record.embed then
 		self.recordEmbed = data.post.record.embed
 	end
-	log.info(vim.inspect(self.postEmbed))
-	log.info(vim.inspect(self.recordEmbed))
+	-- log.info(vim.inspect(self.uri))
+	-- log.info("post embed")
+	-- log.info(vim.inspect(self.postEmbed))
+	-- log.info("record embed")
+	-- log.info(vim.inspect(self.recordEmbed))
 
-	-- if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
-	-- 	for _, img in ipairs(data.embed.images) do
-	-- 		table.insert(self.embeds, {
-	-- 			alt = img.alt,
-	-- 			fullsize = img.fullsize,
-	-- 			thumb = img.thumb,
-	-- 		})
-	-- 	end
-	-- end
+	if data.embed and data.embed["$type"] == "app.bsky.embed.images#view" and data.embed.images then
+		for _, img in ipairs(data.embed.images) do
+			table.insert(self.embeds, {
+				alt = img.alt,
+				fullsize = img.fullsize,
+				thumb = img.thumb,
+			})
+		end
+	end
 
 	-- Check for embeds in the record data and extract image details
 	-- if
