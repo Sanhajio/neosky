@@ -90,17 +90,17 @@ local function append_to_posts(prefix, config, item, reverse, current_line, bufn
 		for i, img in ipairs(item.embeds) do
 			local extension = img.thumb:match("^.+@(%w+)$")
 			local local_img_path = string.format("%s.%s", os.tmpname(), extension)
-			os.execute(string.format("wget %s -O %s -o /dev/null", img.thumb, local_img_path))
+			-- os.execute(string.format("wget %s -O %s -o /dev/null", img.thumb, local_img_path))
 			table.insert(M.img_data, {
 				path = local_img_path,
 				line = current_line, -- adjust this based on where you want the image
 				col = i * 100, -- adjust this based on where you want the image
 				width = img.width,
 				height = img.height,
+				thumb = img.thumb,
 			})
-			-- TODO: adjut this accordingly, all the lines should have this
-			current_line = current_line + 15
 			M.line_to_post_map[current_line] = item.cid
+			insert_line(M.posts, prefix .. img.thumb, reverse)
 			current_line = current_line + 1
 		end
 	end
@@ -108,6 +108,7 @@ local function append_to_posts(prefix, config, item, reverse, current_line, bufn
 	local footer = item:getFooter()
 	insert_line(M.posts, prefix .. footer, reverse)
 	M.line_to_post_map[current_line] = item.cid
+	current_line = current_line + 1
 	insert_line(M.posts, "", reverse)
 	insert_line(M.posts, "", reverse)
 	current_line = current_line + 2
