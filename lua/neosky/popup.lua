@@ -1,14 +1,28 @@
+--- popup.lua - Popup management module for the Neosky Neovim plugin.
+-- This module uses the NUI library to create and manage interactive popups for posting content to Bluesky.
+
 local log = require("plenary.log")
 local nui = require("nui.popup")
 local event = require("nui.utils.autocmd").event
 local M = {}
 
+--- Updates the status line of the popup with character count and language.
+-- @param popup nui.popup The popup instance to update.
+-- @param text string The current text from the popup's buffer.
+-- @param language string The language context of the popup.
+-- @param max number The maximum allowed characters.
 local function update_status_line(popup, text, language, max)
 	local character_count = #text
 	local status_line_content = string.format("%s\t, %s/300", language, character_count)
 	popup.border:set_text("bottom", status_line_content)
 end
 
+--- Creates a popup for entering a post.
+-- This function sets up a new popup window for user input to create posts on Bluesky.
+-- It also configures necessary autocmds to handle text changes and submission.
+-- @param title string The title for the popup window.
+-- @param language string The language context to display in the status line.
+-- @param max number The maximum character limit for the post.
 M.create_popup = function(title, language, max)
 	local bufnr = vim.api.nvim_create_buf(false, true)
 	local width = math.floor(vim.o.columns * 0.5)
@@ -72,6 +86,9 @@ M.create_popup = function(title, language, max)
 	vim.api.nvim_set_current_buf(bufnr)
 end
 
+--- Submits the post from the popup's buffer to Bluesky.
+-- This function gathers the content from the popup's buffer and sends it to Bluesky.
+-- @param bufnr number The buffer number containing the post content.
 M.submit_post = function(bufnr)
 	local neosky = require("neosky")
 	local content = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)

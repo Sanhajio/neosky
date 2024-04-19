@@ -15,8 +15,8 @@ function FeedItem.from_post_data(data)
 	self.uri = data.uri
 	self.reason = data.reason
 	self.embeds = {} -- Initialize embeds as an empty table
-	self.postEmbed = {} -- Initialize embeds as an empty table
-	self.recordEmbed = {} -- Initialize embeds as an empty table
+	self.postEmbed = {} -- Initialize post embeds as an empty table
+	self.recordEmbed = {} -- Initialize embeds as an empty table to be handled by the handler
 	if data.embed then
 		self.postEmbed = data.embed
 	end
@@ -38,30 +38,6 @@ function FeedItem.from_post_data(data)
 		self.recordEmbed = data.record.embed
 	end
 	-- TODO: add a embed not supported
-	-- TODO: images add a image view: preview or flat
-
-	-- log.info(vim.inspect(self.uri), vim.inspect(self.author))
-	-- log.info("post embed")
-	-- log.info(vim.inspect(self.postEmbed))
-	-- log.info("record embed")
-	-- log.info(vim.inspect(self.recordEmbed))
-
-	-- Check for embeds in the record data and extract image details
-	-- if
-	-- 	data.record
-	-- 	and data.record.embed
-	-- 	and data.record.embed["$type"] == "app.bsky.embed.images"
-	-- 	and data.record.embed.images
-	-- then
-	-- 	for _, img in ipairs(data.record.embed.images) do
-	-- 		table.insert(self.embeds, {
-	-- 			alt = img.alt or "",
-	-- 			fullsize = img.image and img.image["$type"] == "blob" and img.image.ref["$link"],
-	-- 			-- Assuming the fullsize image URL needs to be constructed or is directly available
-	-- 			thumb = img.thumb, -- Assuming there is a thumb field directly
-	-- 		})
-	-- 	end
-	-- end
 
 	-- Handle replies
 	if data.reply then
@@ -77,7 +53,6 @@ end
 
 -- TODO: weird how new and from are different
 function FeedItem.new(data)
-	-- log.info(vim.inspect(data))
 	local self = setmetatable({}, FeedItem)
 	self.postData = data.post
 	self.author = data.post.author
@@ -89,9 +64,9 @@ function FeedItem.new(data)
 	self.repostCount = data.post.repostCount
 	self.uri = data.post.uri
 	self.reason = data.post.reason
-	self.postEmbed = {} -- Initialize embeds as an empty table
-	self.recordEmbed = {} -- Initialize embeds as an empty table
-	self.embeds = {} -- Initialize embeds as an empty table
+	self.postEmbed = {} -- Initialize post embeds as an empty table
+	self.recordEmbed = {} -- Initialize record embeds as an empty table
+	self.embeds = {} -- Initialize embeds as an empty table to be handled by the handler
 	if data.post.embed then
 		self.postEmbed = data.post.embed
 	end

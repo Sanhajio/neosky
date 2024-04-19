@@ -1,11 +1,16 @@
+--- image_display.lua - Module for displaying images in Neovim using 3rd/image.nvim.
+-- This module interfaces with 3rd/image.nvim to manage and display images within neosky buffer.
+
 local log = require("plenary.log")
-local api = require("image")
-local utils = require("neosky.utils")
 
 local M = {}
 
+--- Displays images in a Neovim buffer based on provided context.
+--- This function handles the display of images by first retrieving any previously displayed images,
+-- comparing them against new images to be displayed, and updating the buffer accordingly.
+-- @param ctx ImageContext The context containing all necessary data for image operations.
 M.display_img = function(ctx)
-	local previous_images = api.get_images({
+	local previous_images = ctx.api.get_images({
 		window = ctx.window_id,
 		buffer = ctx.buffer_id,
 		namespace = ctx.namespace,
@@ -15,7 +20,6 @@ M.display_img = function(ctx)
 	local new_images = {}
 	for _, item in ipairs(ctx.img_data) do
 		if item ~= {} then
-			-- log.info("dataaa:", ctx.window, ctx.buffer, item.range.start_row, item.range.start_col, item.url)
 			local id = string.format(
 				"%d:%d:%d:%d:%s",
 				ctx.window_id,
@@ -67,23 +71,5 @@ M.display_img = function(ctx)
 		end)
 	end
 end
-
--- local ctx = {
--- 	api = api,
--- 	window = window_id,
--- 	buffer = buffer_id,
--- 	namespace = namespace,
--- 	img_data = {
--- 		{
--- 			url = "https://gist.ro/s/remote.png",
--- 			range = {
--- 				start_row = 2,
--- 				start_col = 1,
--- 				end_row = 1,
--- 				end_col = 1,
--- 			},
--- 		},
--- 	},
--- }
 
 return M
