@@ -49,6 +49,13 @@ The future of Neosky is aimed at evolving into an autonomous social network buil
 - https://github.com/rcarriga/nvim-notify
 - https://github.com/dgrbrady/nvim-docker
 
+## Contributing
+
+for some reason I need to expand rust stack size to 16 MB otherwise the tokio runtime dies, I'll look at it afterward
+  ```bash
+    export RUST_MIN_STACK=16777216  # 16 MB
+  ```
+
 ## Operations
 
 - nuke db
