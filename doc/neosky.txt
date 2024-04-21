@@ -1,0 +1,63 @@
+*neosky.txt*                 Neosky Plugin for Neovim                Last change: 2023-04-19
+
+                    Neosky: Neovim Social Media Integration
+==============================================================================
+CONTENTS                                                       *neosky-contents*
+
+1. Introduction ............................................... |neosky-introduction|
+2. Commands ................................................... |neosky-commands|
+3. Configuration .............................................. |neosky-configuration|
+4. Key Bindings ............................................... |neosky-keys|
+5. FAQ ........................................................ |neosky-faq|
+6. Contact and Support ........................................ |neosky-support|
+
+==============================================================================
+1. Introduction                                                *neosky-introduction*
+
+Neosky is a plugin for Neovim that integrates social media functionality directly
+into your development environment, enabling you to engage with platforms like
+Bluesky without leaving your editor.
+
+==============================================================================
+2. Commands                                                    *neosky-commands*
+
+:NeoSkyPost~
+    Create a new social media post. This opens a popup where you can type your
+    message and send it directly from Neovim.
+
+:NeoSkyReload~
+    Reload the Neosky plugin, refreshing all scripts and configurations without
+    needing to restart Neovim.
+
+==============================================================================
+3. Configuration                                               *neosky-configuration*
+
+To configure Neosky, set the following in your init.vim or init.lua:
+
+    let g:neosky_option = 'value'
+
+This option enables you to customize how Neosky behaves.
+
+==============================================================================
+4. Key Bindings                                                *neosky-keys*
+
+You can bind specific keys to perform Neosky actions directly from the Neosky
+buffer:
+
+    nnoremap <silent> <leader>nf :NeoSkyFollow<cr>
+
+This command sets a key binding to follow a user or topic in Neosky.
+
+==============================================================================
+5. FAQ                                                         *neosky-faq*
+
+Q: How do I install Neosky?
+A: You can install Neosky using your preferred Neovim package manager.
+
+==============================================================================
+6. Contact and Support                                         *neosky-support*
+
+For issues, suggestions, or contributions, please visit the Neosky GitHub repository:
+https://github.com/yourusername/neosky
+
+==============================================================================

@@ -1,9 +1,16 @@
+--- Module for managing background job operations within Neovim.
+-- This module encapsulates functionalities to start and stop background jobs based on user-defined configurations.
+
 local log = require("plenary.log")
 
 local M = {}
 
+--- Maintains the current cooldown state of the job, it is meant to space refresh timeline and Loading More calls to the background process
 M.cooldown = 0
 
+--- Internal function to construct a command string based on provided configuration.
+-- @param config table The configuration settings for the job.
+-- @return string The constructed command string.
 M._cmd = function(config)
 	local cmd = ""
 	if config.auto_update then
@@ -26,6 +33,9 @@ M._cmd = function(config)
 	return cmd
 end
 
+--- Starts the rbsky background nvim handler with the specified configuration.
+-- Logs the command and handles the job start, capturing the job ID.
+-- @param config table The configuration for the background job to start.
 M.start = function(config)
 	local cmd = M._cmd(config)
 	log.info(string.format("Starting %s", cmd))
@@ -39,6 +49,8 @@ M.start = function(config)
 	end
 end
 
+--- Stops the currently running job.
+-- Logs the successful job stop and cleans up the job ID.
 M.stop = function()
 	if M.job_id ~= nil then
 		log.info(string.format("Job rbsky with job_id: %d stopped successfully", M.job_id))
