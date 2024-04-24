@@ -5,12 +5,17 @@ Neosky is a Neovim plugin that integrates comprehensive social networking featur
 
 Key features include:
 
+
 - Full Social Media Interaction: Engage with all essential social media actions directly from Neovim.
 - Multiple Timelines Scrolling: Easily scroll through different social media timelines within your editor.
 - Seamless Integration: Operates smoothly within the Neovim environment, ensuring uninterrupted coding flow.
 - Customizable Interface: Tailor the appearance and functionality of your social interactions within your editor settings.
 
 Designed for developers who wish to stay connected while immersed in coding, Neosky combines robust social media integration with the efficiency of Neovim.
+
+## Demo
+
+https://github.com/Sanhajio/neosky/assets/17402163/0981b712-f8d9-4983-815d-a52c39f86949
 
 
 ## Installation
